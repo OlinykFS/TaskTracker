@@ -16,28 +16,28 @@ public class TaskRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Task> findAll() {
-        String sql = "SELECT * FROM task";
+        String sql = "SELECT * FROM tasks";
         return jdbcTemplate.query(sql, new TaskRowMapper());
     }
 
     public Task findById(Long id) {
-        String sql = "SELECT * FROM task WHERE id = ?";
+        String sql = "SELECT * FROM tasks WHERE id = ?";
         return jdbcTemplate.query(sql, new TaskRowMapper(), id).get(0);
     }
 
     public Task findByTitle(String title) {
-        String sql = "SELECT * FROM task WHERE title = ?";
+        String sql = "SELECT * FROM tasks WHERE title = ?";
         return jdbcTemplate.query(sql, new TaskRowMapper(), title).get(0);
     }
 
     public List<Task> findByStatus(TaskStatus status) {
-        String sql = "SELECT * FROM task WHERE status = ?";
+        String sql = "SELECT * FROM tasks WHERE status = ?";
         return jdbcTemplate.query(sql, new TaskRowMapper(), status);
     }
 
-    public int save(Task task) {
-        String sql = "INSERT INTO task (title, status) VALUES (?, ?)";
-        return jdbcTemplate.update(sql, task.getTitle(), task.getStatus().name());
+    public void save(Task task) {
+        String sql = "INSERT INTO tasks (title, status) VALUES (?, ?)";
+        jdbcTemplate.update(sql, task.getTitle(), task.getStatus().name());
     }
 
 }
