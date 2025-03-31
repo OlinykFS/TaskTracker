@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class UserRepository {
@@ -14,11 +16,22 @@ public class UserRepository {
 
     public User findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
-        return jdbcTemplate.query(sql, new UserRowMapper(), email).get(0);
+        List<User> users = jdbcTemplate.query(sql, new UserRowMapper(), email);
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    public List<User> getAllUsers() {
+        String sql = "SELECT * FROM users";
+        return jdbcTemplate.query(sql, new UserRowMapper());
     }
 
     public int createUser(User user) {
-        String sql = "INSERT INTO users (email, password, firstname, lastname) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
+        String sql = "INSERT INTO users (email, password, firstName, lastName, role) VALUES (?, ?, ?, ?, ?)";
+        return jdbcTemplate.update(sql,
+                user.getEmail(),
+                user.getPassword(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole().name());
     }
 }

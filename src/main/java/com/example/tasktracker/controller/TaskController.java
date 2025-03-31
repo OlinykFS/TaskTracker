@@ -2,7 +2,7 @@ package com.example.tasktracker.controller;
 
 
 import com.example.tasktracker.model.Task;
-import com.example.tasktracker.service.TaskService;
+import com.example.tasktracker.service.taskService.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -13,5 +13,4 @@ public class TeamMember {
     private Long userId;
     private Long teamId;
     private TeamRole teamRole;
-
 }

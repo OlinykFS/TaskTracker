@@ -14,9 +14,9 @@ public class TeamMemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public int addUserToTeam(Long userId, Long teamId, String teamRole) {
+    public int addUserToTeam(TeamMember teamMember) {
         String sql = "INSERT INTO team_members (user_id, team_id, team_role) VALUES (?, ?, ?)";
-        return jdbcTemplate.update(sql, userId, teamId, teamRole);
+        return jdbcTemplate.update(sql, teamMember.getUserId(), teamMember.getTeamId(), teamMember.getTeamRole().name());
     }
 
     public List<TeamMember> getTeamMembersByTeamId(Long teamId) {

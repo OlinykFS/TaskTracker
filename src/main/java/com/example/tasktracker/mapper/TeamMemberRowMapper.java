@@ -12,8 +12,8 @@ public class TeamMemberRowMapper implements RowMapper<TeamMember> {
     @Override
     public TeamMember mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new TeamMember(
-                rs.getLong("userId"),
-                rs.getLong("teamId"),
+                rs.getLong("user_id"),
+                rs.getLong("team_id"),
                 TeamRole.fromValue(rs.getString("team_role"))
         );
     }

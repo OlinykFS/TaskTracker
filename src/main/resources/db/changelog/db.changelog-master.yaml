@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/1-create-tasks.sql
+  - include:
+      file: db/changelog/2-users-unique-email.sql

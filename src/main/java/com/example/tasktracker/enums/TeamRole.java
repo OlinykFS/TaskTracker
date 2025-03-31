@@ -17,11 +17,12 @@ public enum TeamRole {
     private final String value;
 
     public static TeamRole fromValue(String value) {
-        try {
-            return TeamRole.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new CustomRoleNotFoundException("Unknown TeamRole value: " + value);
+        for (TeamRole role : values()) {
+            if (role.name().equalsIgnoreCase(value)) {
+                return role;
+            }
         }
+        throw new CustomRoleNotFoundException("Unknown TeamRole value: " + value);
     }
 
 
