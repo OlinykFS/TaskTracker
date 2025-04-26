@@ -15,13 +15,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     @Override
-    public List<Task> findAllTask() {
+    public List<Task> findAllTasks() {
         return taskRepository.findAll();
     }
 
     @Override
-    public Task findTaskById(Long id) {
-        return taskRepository.findById(id);
+    public Task findTaskById(Long taskId) {
+        return taskRepository.findTaskById(taskId);
     }
 
     @Override

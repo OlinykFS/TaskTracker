@@ -6,7 +6,6 @@ import com.example.tasktracker.model.Team;
 import java.util.List;
 
 public interface TeamService {
-    Team findTeamById(Long id);
     void createTeam(TeamCreateDTO teamCreateDTO);
     List<Team> findAllTeams();
 

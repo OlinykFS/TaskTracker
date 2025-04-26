@@ -1,32 +1,16 @@
 package com.example.tasktracker.repository;
 
-import com.example.tasktracker.mapper.TeamMemberRowMapper;
 import com.example.tasktracker.model.TeamMember;
-import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
-public class TeamMemberRepository {
+public interface TeamMemberRepository extends CrudRepository<TeamMember, Long> {
 
-    private final JdbcTemplate jdbcTemplate;
+    List<TeamMember> getTeamMemberByTeamId(Long teamId);
+    List<TeamMember> getTeamMemberByUserId(Long userId);
 
-    public int addUserToTeam(TeamMember teamMember) {
-        String sql = "INSERT INTO team_members (user_id, team_id, team_role) VALUES (?, ?, ?)";
-        return jdbcTemplate.update(sql, teamMember.getUserId(), teamMember.getTeamId(), teamMember.getTeamRole().name());
-    }
-
-    public List<TeamMember> getTeamMembersByTeamId(Long teamId) {
-        String sql = "select * from team_members where team_id = ?";
-        return jdbcTemplate.query(sql, new TeamMemberRowMapper(), teamId);
-    }
-
-    public List<TeamMember> findRolesByUserId(Long userId) {
-        String sql = "SELECT team_id, team_role FROM team_members WHERE user_id = ?";
-        return jdbcTemplate.query(sql, new TeamMemberRowMapper(), userId);
-    }
-
+    List<TeamMember> getTeamMembersByUserId(Long userId);
 }

@@ -5,12 +5,16 @@ import com.example.tasktracker.enums.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@Table("tasks")
 public class Task {
 
+    @Id
     private Long id;
 
     private String title;

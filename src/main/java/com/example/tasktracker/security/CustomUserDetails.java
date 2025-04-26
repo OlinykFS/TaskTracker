@@ -12,6 +12,7 @@ import java.util.List;
 
 public record CustomUserDetails(User user, List<TeamMember> teamRoles) implements UserDetails {
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -24,6 +25,10 @@ public record CustomUserDetails(User user, List<TeamMember> teamRoles) implement
         }
 
         return authorities;
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 
     @Override

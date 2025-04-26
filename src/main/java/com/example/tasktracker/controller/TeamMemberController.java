@@ -1,5 +1,6 @@
 package com.example.tasktracker.controller;
 
+import com.example.tasktracker.dto.teamMemberDtos.TeamMemberCreateDTO;
 import com.example.tasktracker.model.TeamMember;
 import com.example.tasktracker.service.teamMembersService.TeamMemberService;
 import jakarta.validation.Valid;
@@ -16,8 +17,8 @@ public class TeamMemberController {
     private final TeamMemberService teamMemberService;
 
     @PostMapping("/new")
-    public void addTeamMember(@Valid @RequestBody TeamMember teamMember) {
-        teamMemberService.addTeamMember(teamMember);
+    public TeamMember addTeamMember(@Valid @RequestBody TeamMemberCreateDTO teamMember) {
+        return teamMemberService.addTeamMember(teamMember);
     }
 
     @GetMapping("/{teamId}")

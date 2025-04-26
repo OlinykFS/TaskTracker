@@ -6,8 +6,8 @@ import com.example.tasktracker.model.Task;
 import java.util.List;
 
 public interface TaskService {
-    List<Task> findAllTask();
-    Task findTaskById(Long id);
+    List<Task> findAllTasks();
+    Task findTaskById(Long taskId);
     void saveTask(Task task);
 
 }

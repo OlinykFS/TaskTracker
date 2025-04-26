@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO registrationRequest) {
         String encodedPassword = passwordEncoder.encode(registrationRequest.password());
         User user = new User(
@@ -46,14 +48,10 @@ public class AuthServiceImpl implements AuthService {
                 UserRole.ROLE_USER
         );
         try {
-            int rows = userRepository.createUser(user);
-            if (rows > 0) {
+            userRepository.save(user);
                 return new RegistrationResponseDTO("User registered successfully");
-            }
-            throw new RuntimeException("Registration failed");
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
             throw new EmailAlreadyExistsException("Email already exists", ex);
         }
     }
-
 }
