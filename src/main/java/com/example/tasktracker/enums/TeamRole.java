@@ -1,6 +1,5 @@
 package com.example.tasktracker.enums;
 
-import com.example.tasktracker.exceptions.CustomRoleNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,15 +14,4 @@ public enum TeamRole {
     ROLE_OBSERVER("Observer");
 
     private final String value;
-
-    public static TeamRole fromValue(String value) {
-        for (TeamRole role : values()) {
-            if (role.name().equalsIgnoreCase(value)) {
-                return role;
-            }
-        }
-        throw new CustomRoleNotFoundException("Unknown TeamRole value: " + value);
-    }
-
-
 }

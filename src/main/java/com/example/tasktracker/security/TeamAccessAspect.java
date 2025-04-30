@@ -1,9 +1,9 @@
 package com.example.tasktracker.security;
 
+import com.example.tasktracker.enums.TeamRole;
 import com.example.tasktracker.model.TeamMember;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,34 +11,34 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.List;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TeamAccessAspect {
-
-    private final HttpServletRequest request;
 
     @Around("@annotation(com.example.tasktracker.security.TeamAccess)")
     public Object checkTeamAccess(ProceedingJoinPoint joinPoint) throws Throwable {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+
         if (!(principal instanceof CustomUserDetails userDetails)) {
             throw new SecurityException("Unauthorized");
         }
 
-        Long teamId = extractTeamIdFromRequest();
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        TeamAccess teamAccess = signature.getMethod().getAnnotation(TeamAccess.class);
+        TeamRole requiredRole = teamAccess.requiredRole();
+
+        Long teamId = extractTeamIdFromArgs(signature, joinPoint.getArgs());
+
 
         if (teamId == null) {
             throw new SecurityException("teamId is required");
         }
-
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-        TeamAccess teamAccess = method.getAnnotation(TeamAccess.class);
-        String requiredRole = teamAccess.requiredRole();
 
         if (!hasRequiredRole(userDetails.teamRoles(), teamId, requiredRole)) {
             throw new SecurityException("Access denied");
@@ -47,22 +47,49 @@ public class TeamAccessAspect {
         return joinPoint.proceed();
     }
 
-    private Long extractTeamIdFromRequest() {
-        try {
-            String path = request.getRequestURI();
-            String[] parts = path.split("/");
-            for (int i = 0; i < parts.length; i++) {
-                if (parts[i].equals("teams") && i + 1 < parts.length) {
-                    return Long.parseLong(parts[i + 1]);
+    private Long extractTeamIdFromArgs(MethodSignature signature, Object[] args) {
+        var parameterAnnotations = signature.getMethod().getParameterAnnotations();
+
+        for (int i = 0; i < args.length; i++) {
+            Object arg = args[i];
+            if (arg == null) continue;
+
+            for (var annotation : parameterAnnotations[i]) {
+                if (annotation.annotationType() == TeamId.class && arg instanceof Long teamId) {
+                    return teamId;
                 }
             }
-        } catch (NumberFormatException ignored) {
+
+            Long extracted = extractTeamIdFromObject(arg);
+            if (extracted != null) return extracted;
+        }
+
+        return null;
+    }
+
+
+    private Long extractTeamIdFromObject(Object obj) {
+        for (Field field : obj.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(TeamId.class) && field.getType().equals(Long.class)) {
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(obj);
+                    if (value instanceof Long teamId) {
+                        return teamId;
+                    }
+                } catch (IllegalAccessException e) {
+                    log.warn("Failed to access teamId from object: {}", obj, e);
+                }
+            }
         }
         return null;
     }
 
-    private boolean hasRequiredRole(List<TeamMember> teamRoles, Long teamId, String requiredRole) {
+    private boolean hasRequiredRole(List<TeamMember> teamRoles, Long teamId, TeamRole requiredRole) {
         return teamRoles.stream()
-                .anyMatch(role -> role.getTeamId().equals(teamId) && role.getTeamRole().getValue().equals(requiredRole));
+                .anyMatch(role ->
+                        role.getTeamId().equals(teamId) &&
+                                role.getTeamRole().equals(requiredRole)
+                );
     }
 }

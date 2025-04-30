@@ -21,13 +21,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findUserByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
         List<TeamMember> teamRoles = teamMemberRepository.getTeamMembersByUserId(user.getId());
 
         return new CustomUserDetails(user, teamRoles);
     }
+
 }

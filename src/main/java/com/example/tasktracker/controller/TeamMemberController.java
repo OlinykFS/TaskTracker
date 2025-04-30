@@ -1,6 +1,7 @@
 package com.example.tasktracker.controller;
 
 import com.example.tasktracker.dto.teamMemberDtos.TeamMemberCreateDTO;
+import com.example.tasktracker.dto.teamMemberDtos.TeamMemberResponseDTO;
 import com.example.tasktracker.model.TeamMember;
 import com.example.tasktracker.service.teamMembersService.TeamMemberService;
 import jakarta.validation.Valid;
@@ -22,8 +23,8 @@ public class TeamMemberController {
     }
 
     @GetMapping("/{teamId}")
-    public List<TeamMember> getAllTeamMembers(@PathVariable Long teamId) {
-        return teamMemberService.findAllTeamMembers(teamId);
+    public List<TeamMemberResponseDTO> getAllTeamMembers(@PathVariable Long teamId) {
+        return teamMemberService.findAllTeamMembersByTeamId(teamId);
     }
 
 }
