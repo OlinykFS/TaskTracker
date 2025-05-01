@@ -23,12 +23,13 @@ public class TeamMemberServiceImpl implements TeamMemberService {
     @Override
     @TeamAccess(requiredRole = TeamRole.ROLE_MANAGER)
     public List<TeamMemberResponseDTO> findAllTeamMembersByTeamId(@TeamId Long teamId) {
-        return teamMemberRepository.findTeamMembersWithUserDetailsByTeamId(teamId);
+        return teamMemberRepository.getTeamMembersWithUserDetailsByTeamId(teamId);
     }
 
     @Override
     public TeamMember addTeamMember(TeamMemberCreateDTO teamMember) {
         TeamMember tm = objectMapper.convertValue(teamMember, TeamMember.class);
+        tm.setTeamRole(teamMember.teamRole());
         return teamMemberRepository.save(tm);
     }
 }

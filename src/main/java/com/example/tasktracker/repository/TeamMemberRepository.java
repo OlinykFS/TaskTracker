@@ -20,7 +20,7 @@ public interface TeamMemberRepository extends CrudRepository<TeamMember, Long> {
     JOIN users u ON tm.user_id = u.id
     WHERE tm.team_id = :teamId
 """)
-    List<TeamMemberResponseDTO> findTeamMembersWithUserDetailsByTeamId(Long teamId);
+    List<TeamMemberResponseDTO> getTeamMembersWithUserDetailsByTeamId(Long teamId);
 
 
 

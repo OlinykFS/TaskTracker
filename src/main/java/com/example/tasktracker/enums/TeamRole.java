@@ -3,8 +3,9 @@ package com.example.tasktracker.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
+
 @Getter
+@AllArgsConstructor
 public enum TeamRole {
     ROLE_MEMBER("Member"),
     ROLE_MANAGER("Manager"),
