@@ -2,7 +2,6 @@ package com.example.tasktracker.controller;
 
 import com.example.tasktracker.dto.teamMemberDtos.TeamMemberCreateDTO;
 import com.example.tasktracker.dto.teamMemberDtos.TeamMemberResponseDTO;
-import com.example.tasktracker.model.TeamMember;
 import com.example.tasktracker.service.teamMembersService.TeamMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +16,9 @@ public class TeamMemberController {
 
     private final TeamMemberService teamMemberService;
 
-    @PostMapping("/new")
-    public TeamMember addTeamMember(@Valid @RequestBody TeamMemberCreateDTO teamMember) {
-        return teamMemberService.addTeamMember(teamMember);
+    @PostMapping
+    public TeamMemberResponseDTO addTeamMember(@Valid @RequestBody TeamMemberCreateDTO dto) {
+        return teamMemberService.addTeamMember(dto);
     }
 
     @GetMapping("/{teamId}")
@@ -27,4 +26,9 @@ public class TeamMemberController {
         return teamMemberService.findAllTeamMembersByTeamId(teamId);
     }
 
+    @DeleteMapping
+    public void deleteTeamMember(@RequestParam Long teamId, @RequestParam Long userId) {
+        teamMemberService.deleteTeamMember(teamId, userId);
+    }
 }
+

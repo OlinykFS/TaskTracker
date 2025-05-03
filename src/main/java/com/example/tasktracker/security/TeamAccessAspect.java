@@ -8,6 +8,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,7 @@ public class TeamAccessAspect {
 
 
         if (!(principal instanceof CustomUserDetails userDetails)) {
-            throw new SecurityException("Unauthorized");
+            throw new AccessDeniedException("Unauthorized");
         }
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();

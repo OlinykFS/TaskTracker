@@ -23,6 +23,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
+    @ExceptionHandler(TeamIsEmptyException.class)
+    public ResponseEntity<ErrorResponse> handleTeamIsEmptyException(TeamIsEmptyException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(),"Team is Empty", HttpStatus.NO_CONTENT.value());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(TeamMemberAlreadyExistException.class)
+    public ResponseEntity<ErrorResponse> handleTeamMemberAlreadyExistException(TeamMemberAlreadyExistException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(),"Team Member already exists", HttpStatus.CONFLICT.value());
+        return ResponseEntity.badRequest().body(error);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorResponse error = new ErrorResponse("Access denied: " + ex.getMessage(), "ACCESS_DENIED", HttpStatus.FORBIDDEN.value());
