@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX uniq_team_user ON team_members(team_id, user_id);

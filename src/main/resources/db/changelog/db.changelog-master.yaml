@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/2-users-unique-email.sql
   - include:
       file: db/changelog/3-teams-add-new-bigSerialId.sql
+  - include:
+      file: db/changelog/4-create-unique-index-on-TeamMembers-Table.sql

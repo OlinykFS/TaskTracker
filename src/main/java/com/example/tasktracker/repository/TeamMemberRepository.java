@@ -35,15 +35,9 @@ public interface TeamMemberRepository extends CrudRepository<TeamMember, Long> {
         JOIN users u ON tm.user_id = u.id
         WHERE tm.team_id = :teamId AND tm.user_id = :userId
     """)
-    TeamMemberResponseDTO getTeamMemberWithUserDetailsByUserId(
-            @Param("teamId") Long teamId,
-            @Param("userId") Long userId
-    );
+    Optional<TeamMemberResponseDTO> getTeamMemberWithUserDetailsByUserId(@Param("teamId") Long teamId, @Param("userId") Long userId);
 
     List<TeamMember> findAllByUserId(Long userId);
-
-
-    void deleteTeamMemberById(Long id);
 
     Optional<TeamMember> getTeamMemberByTeamIdAndUserId(Long teamId, Long userId);
 }

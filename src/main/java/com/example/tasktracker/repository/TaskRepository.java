@@ -1,19 +1,18 @@
 package com.example.tasktracker.repository;
 
-import com.example.tasktracker.enums.TaskStatus;
+import com.example.tasktracker.dto.taskDtos.TaskResponseDTO;
 import com.example.tasktracker.model.Task;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface TaskRepository extends CrudRepository<Task, Long > {
+public interface TaskRepository extends CrudRepository<Task, Long> {
 
-    List<Task> findAll();
 
-    List<Task> findByStatus(TaskStatus status);
-    Task findByTitle(String title);
+    Optional<TaskResponseDTO> findTaskById(Long id);
 
-    Task findTaskById(Long id);
+    Optional<List<TaskResponseDTO>> getAllTasksByTeamId(Long teamId);
 }

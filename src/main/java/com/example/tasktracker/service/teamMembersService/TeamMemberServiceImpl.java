@@ -3,19 +3,25 @@ package com.example.tasktracker.service.teamMembersService;
 import com.example.tasktracker.dto.teamMemberDtos.TeamMemberCreateDTO;
 import com.example.tasktracker.dto.teamMemberDtos.TeamMemberResponseDTO;
 import com.example.tasktracker.enums.TeamRole;
-import com.example.tasktracker.exceptions.TeamIsEmptyException;
+import com.example.tasktracker.exceptions.teamExceptions.TeamEmptyException;
+import com.example.tasktracker.exceptions.teamExceptions.TeamMemberAlreadyExistException;
+import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundException;
 import com.example.tasktracker.model.TeamMember;
 import com.example.tasktracker.repository.TeamMemberRepository;
 import com.example.tasktracker.security.TeamAccess;
 import com.example.tasktracker.security.TeamId;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TeamMemberServiceImpl implements TeamMemberService {
@@ -27,23 +33,21 @@ public class TeamMemberServiceImpl implements TeamMemberService {
     @TeamAccess(requiredRole = TeamRole.ROLE_MANAGER)
     public List<TeamMemberResponseDTO> findAllTeamMembersByTeamId(@TeamId Long teamId) {
         return teamMemberRepository.getTeamMembersWithUserDetailsByTeamId(teamId).orElseThrow
-                (() -> new TeamIsEmptyException("the Team is Empty"));
+                (() -> new TeamEmptyException("the Team is Empty"));
     }
 
     @Override
-    @Transactional
     @TeamAccess(requiredRole = TeamRole.ROLE_MANAGER)
+    @Transactional
     public TeamMemberResponseDTO addTeamMember(TeamMemberCreateDTO dto) {
-        return teamMemberRepository
-                .getTeamMemberByTeamIdAndUserId(dto.teamId(), dto.userId())
-                .map(existing -> teamMemberRepository.getTeamMemberWithUserDetailsByUserId(dto.userId(), dto.teamId()))
-                .orElseGet(() -> {
-                    TeamMember newMember = objectMapper.convertValue(dto, TeamMember.class);
-                    teamMemberRepository.save(newMember);
-                    return teamMemberRepository.getTeamMemberWithUserDetailsByUserId(dto.userId(), dto.teamId());
-                });
+        try {
+            teamMemberRepository.save(objectMapper.convertValue(dto, TeamMember.class));
+        } catch (DuplicateKeyException | DbActionExecutionException e) {
+            throw new TeamMemberAlreadyExistException("Team member already exists");
+        }
+        return teamMemberRepository.getTeamMemberWithUserDetailsByUserId(dto.teamId(), dto.userId())
+                .orElseThrow(() -> new TeamMemberNotFoundException("Team member not found"));
     }
-
 
 
     @Override

@@ -1,6 +1,9 @@
 package com.example.tasktracker.exceptions;
 
 import com.example.tasktracker.dto.ErrorResponse;
+import com.example.tasktracker.exceptions.teamExceptions.TeamEmptyException;
+import com.example.tasktracker.exceptions.teamExceptions.TeamMemberAlreadyExistException;
+import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +26,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler(TeamIsEmptyException.class)
-    public ResponseEntity<ErrorResponse> handleTeamIsEmptyException(TeamIsEmptyException ex) {
+    @ExceptionHandler(TeamMemberNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTeamMemberNotFoundException(TeamMemberNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(),"TEAM_MEMBER_NOT_FOUND", HttpStatus.NOT_FOUND.value());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(TeamEmptyException.class)
+    public ResponseEntity<ErrorResponse> handleTeamIsEmptyException(TeamEmptyException ex) {
         ErrorResponse error = new ErrorResponse(ex.getMessage(),"Team is Empty", HttpStatus.NO_CONTENT.value());
         return ResponseEntity.badRequest().body(error);
     }
