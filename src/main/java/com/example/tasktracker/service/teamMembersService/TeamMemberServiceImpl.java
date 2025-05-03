@@ -6,11 +6,11 @@ import com.example.tasktracker.enums.TeamRole;
 import com.example.tasktracker.exceptions.teamExceptions.TeamEmptyException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamMemberAlreadyExistException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundException;
+import com.example.tasktracker.mapper.TeamMemberMapper;
 import com.example.tasktracker.model.TeamMember;
 import com.example.tasktracker.repository.TeamMemberRepository;
 import com.example.tasktracker.security.TeamAccess;
 import com.example.tasktracker.security.TeamId;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -27,21 +27,21 @@ import java.util.List;
 public class TeamMemberServiceImpl implements TeamMemberService {
 
     private final TeamMemberRepository teamMemberRepository;
-    private final ObjectMapper objectMapper;
+    private final TeamMemberMapper teamMemberMapper;
 
     @Override
-    @TeamAccess(requiredRole = TeamRole.ROLE_MANAGER)
+    @TeamAccess(requiredRoles = {TeamRole.ROLE_MANAGER})
     public List<TeamMemberResponseDTO> findAllTeamMembersByTeamId(@TeamId Long teamId) {
-        return teamMemberRepository.getTeamMembersWithUserDetailsByTeamId(teamId).orElseThrow
-                (() -> new TeamEmptyException("the Team is Empty"));
+        return teamMemberRepository.getTeamMembersWithUserDetailsByTeamId(teamId)
+                .orElseThrow(() -> new TeamEmptyException("the Team is Empty"));
     }
 
     @Override
-    @TeamAccess(requiredRole = TeamRole.ROLE_MANAGER)
+    @TeamAccess(requiredRoles = {TeamRole.ROLE_MANAGER})
     @Transactional
     public TeamMemberResponseDTO addTeamMember(TeamMemberCreateDTO dto) {
         try {
-            teamMemberRepository.save(objectMapper.convertValue(dto, TeamMember.class));
+            teamMemberRepository.save(teamMemberMapper.toEntity(dto));
         } catch (DuplicateKeyException | DbActionExecutionException e) {
             throw new TeamMemberAlreadyExistException("Team member already exists");
         }
@@ -49,13 +49,18 @@ public class TeamMemberServiceImpl implements TeamMemberService {
                 .orElseThrow(() -> new TeamMemberNotFoundException("Team member not found"));
     }
 
-
     @Override
-    @TeamAccess(requiredRole = TeamRole.ROLE_MANAGER)
+    @TeamAccess(requiredRoles = {TeamRole.ROLE_MANAGER})
     @Transactional
     public void deleteTeamMember(@TeamId Long teamId, Long userId) {
         TeamMember tm = teamMemberRepository.getTeamMemberByTeamIdAndUserId(teamId, userId)
                 .orElseThrow(() -> new UsernameNotFoundException("Team member not found"));
         teamMemberRepository.deleteById(tm.getId());
     }
+
+    @Override
+    public boolean isUserMemberOfTeam(Long teamId, Long userId) {
+        return teamMemberRepository.existsByTeamIdAndUserId(teamId, userId);
+    }
+
 }

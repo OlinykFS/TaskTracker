@@ -3,10 +3,13 @@ package com.example.tasktracker.service.taskService;
 import com.example.tasktracker.dto.taskDtos.TaskCreateDTO;
 import com.example.tasktracker.dto.taskDtos.TaskResponseDTO;
 import com.example.tasktracker.dto.taskDtos.TaskUpdateDTO;
+import com.example.tasktracker.enums.TeamRole;
 import com.example.tasktracker.exceptions.taskExceptions.TaskNotFoundException;
 import com.example.tasktracker.mapper.TaskMapper;
 import com.example.tasktracker.model.Task;
 import com.example.tasktracker.repository.TaskRepository;
+import com.example.tasktracker.security.TeamAccess;
+import com.example.tasktracker.service.teamMembersService.TeamMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,7 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final TeamMemberService teamMemberService;
 
     @Override
     public List<TaskResponseDTO> findAllByTeamId(Long teamId) {
@@ -34,11 +38,21 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public TaskResponseDTO create(TaskCreateDTO taskCreateDTO) {
-        Task task = taskMapper.toEntity(taskCreateDTO);
+    @TeamAccess(requiredRoles = {TeamRole.ROLE_MANAGER})
+    public TaskResponseDTO create(TaskCreateDTO dto) {
+
+        if (dto.userId() != null) {
+            boolean isMember = teamMemberService.isUserMemberOfTeam(dto.teamId(), dto.userId());
+            if (!isMember) {
+                throw new IllegalArgumentException("User is not a member of this team");
+            }
+        }
+
+        Task task = taskMapper.toEntity(dto);
         taskRepository.save(task);
         return taskMapper.toDto(task);
     }
+
 
     @Override
     public void delete(Long taskId) {
@@ -48,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskResponseDTO update(TaskUpdateDTO taskUpdateDTO) {
         Task task = taskRepository.findById(taskUpdateDTO.taskId())
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
         taskMapper.updateEntityFromDto(taskUpdateDTO, task);
         taskRepository.save(task);
         return taskMapper.toDto(task);

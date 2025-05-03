@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 
 @Aspect
@@ -25,23 +26,20 @@ public class TeamAccessAspect {
     public Object checkTeamAccess(ProceedingJoinPoint joinPoint) throws Throwable {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-
         if (!(principal instanceof CustomUserDetails userDetails)) {
             throw new AccessDeniedException("Unauthorized");
         }
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         TeamAccess teamAccess = signature.getMethod().getAnnotation(TeamAccess.class);
-        TeamRole requiredRole = teamAccess.requiredRole();
+        TeamRole[] requiredRoles = teamAccess.requiredRoles();
 
         Long teamId = extractTeamIdFromArgs(signature, joinPoint.getArgs());
-
-
         if (teamId == null) {
             throw new SecurityException("teamId is required");
         }
 
-        if (!hasRequiredRole(userDetails.teamRoles(), teamId, requiredRole)) {
+        if (!hasRequiredRole(userDetails.teamRoles(), teamId, requiredRoles)) {
             throw new SecurityException("Access denied");
         }
 
@@ -68,7 +66,6 @@ public class TeamAccessAspect {
         return null;
     }
 
-
     private Long extractTeamIdFromObject(Object obj) {
         for (Field field : obj.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(TeamId.class) && field.getType().equals(Long.class)) {
@@ -86,11 +83,12 @@ public class TeamAccessAspect {
         return null;
     }
 
-    private boolean hasRequiredRole(List<TeamMember> teamRoles, Long teamId, TeamRole requiredRole) {
+    private boolean hasRequiredRole(List<TeamMember> teamRoles, Long teamId, TeamRole[] requiredRoles) {
         return teamRoles.stream()
-                .anyMatch(role ->
-                        role.getTeamId().equals(teamId) &&
-                                role.getTeamRole().equals(requiredRole)
+                .filter(role -> role.getTeamId().equals(teamId))
+                .anyMatch(userRole ->
+                        Arrays.stream(requiredRoles)
+                                .anyMatch(required -> userRole.getTeamRole().hasAccessTo(required))
                 );
     }
 }

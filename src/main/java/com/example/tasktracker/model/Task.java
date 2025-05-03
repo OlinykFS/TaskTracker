@@ -16,7 +16,6 @@ public class Task {
 
     @Id
     private Long id;
-
     private String title;
 
     private String description;
@@ -26,5 +25,6 @@ public class Task {
     private TaskPriority priority;
 
     private Long teamId;
+
     private Long userId;
 }

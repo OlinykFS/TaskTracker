@@ -9,4 +9,5 @@ public interface TeamMemberService {
     List<TeamMemberResponseDTO> findAllTeamMembersByTeamId(Long teamId);
     TeamMemberResponseDTO addTeamMember(TeamMemberCreateDTO teamMember);
     void deleteTeamMember(Long teamId, Long userId);
+    boolean isUserMemberOfTeam(Long teamId, Long userId);
 }

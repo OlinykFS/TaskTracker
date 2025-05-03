@@ -40,4 +40,6 @@ public interface TeamMemberRepository extends CrudRepository<TeamMember, Long> {
     List<TeamMember> findAllByUserId(Long userId);
 
     Optional<TeamMember> getTeamMemberByTeamIdAndUserId(Long teamId, Long userId);
+
+    boolean existsByTeamIdAndUserId(Long teamId, Long userId);
 }

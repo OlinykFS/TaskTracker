@@ -31,6 +31,7 @@ public class TaskController {
     public TaskResponseDTO createTask(@RequestBody TaskCreateDTO dto) {
         return taskService.create(dto);
     }
+
     @DeleteMapping
     public void deleteTaskById(@RequestParam Long taskId) {
         taskService.delete(taskId);
