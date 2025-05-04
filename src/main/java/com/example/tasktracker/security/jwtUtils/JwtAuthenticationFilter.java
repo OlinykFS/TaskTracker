@@ -1,4 +1,4 @@
-package com.example.tasktracker.security;
+package com.example.tasktracker.security.jwtUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

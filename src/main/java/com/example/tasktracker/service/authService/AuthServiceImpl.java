@@ -8,7 +8,7 @@ import com.example.tasktracker.enums.UserRole;
 import com.example.tasktracker.exceptions.EmailAlreadyExistsException;
 import com.example.tasktracker.model.User;
 import com.example.tasktracker.repository.UserRepository;
-import com.example.tasktracker.security.JwtTokenProvider;
+import com.example.tasktracker.security.jwtUtils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;

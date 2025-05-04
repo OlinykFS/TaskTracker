@@ -1,9 +1,10 @@
-package com.example.tasktracker.security;
+package com.example.tasktracker.security.jwtUtils;
 
 import com.example.tasktracker.model.TeamMember;
 import com.example.tasktracker.model.User;
 import com.example.tasktracker.repository.TeamMemberRepository;
 import com.example.tasktracker.repository.UserRepository;
+import com.example.tasktracker.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

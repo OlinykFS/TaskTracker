@@ -9,8 +9,8 @@ import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundExcep
 import com.example.tasktracker.mapper.TaskMapper;
 import com.example.tasktracker.model.Task;
 import com.example.tasktracker.repository.TaskRepository;
-import com.example.tasktracker.security.TeamAccess;
-import com.example.tasktracker.security.TeamId;
+import com.example.tasktracker.security.teamAccessUtils.TeamAccess;
+import com.example.tasktracker.security.teamAccessUtils.TeamId;
 import com.example.tasktracker.service.teamMembersService.TeamMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

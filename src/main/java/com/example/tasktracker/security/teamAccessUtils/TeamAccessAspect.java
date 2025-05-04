@@ -1,7 +1,8 @@
-package com.example.tasktracker.security;
+package com.example.tasktracker.security.teamAccessUtils;
 
 import com.example.tasktracker.enums.TeamRole;
 import com.example.tasktracker.model.TeamMember;
+import com.example.tasktracker.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,7 +23,7 @@ import java.util.List;
 @Slf4j
 public class TeamAccessAspect {
 
-    @Around("@annotation(com.example.tasktracker.security.TeamAccess)")
+    @Around("@annotation(com.example.tasktracker.security.teamAccessUtils.TeamAccess)")
     public Object checkTeamAccess(ProceedingJoinPoint joinPoint) throws Throwable {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

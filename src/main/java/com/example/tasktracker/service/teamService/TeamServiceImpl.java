@@ -3,13 +3,17 @@ package com.example.tasktracker.service.teamService;
 import com.example.tasktracker.dto.teamDtos.TeamCreateDTO;
 import com.example.tasktracker.dto.teamDtos.TeamResponseDTO;
 import com.example.tasktracker.dto.teamDtos.TeamUpdateDTO;
+import com.example.tasktracker.enums.TeamRole;
+import com.example.tasktracker.exceptions.teamExceptions.TeamNotFoundException;
+import com.example.tasktracker.mapper.TeamMapper;
 import com.example.tasktracker.model.Team;
 import com.example.tasktracker.repository.TeamRepository;
-import com.example.tasktracker.security.TeamId;
+import com.example.tasktracker.security.teamAccessUtils.TeamAccess;
+import com.example.tasktracker.security.teamAccessUtils.TeamId;
 import com.example.tasktracker.service.userService.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,12 +22,13 @@ import java.util.List;
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
-    private final ObjectMapper objectMapper;
+    private final TeamMapper teamMapper;
     private final UserService userService;
 
     @Override
+    @Transactional
     public void createTeam(TeamCreateDTO teamCreateDTO) {
-        Team team = objectMapper.convertValue(teamCreateDTO, Team.class);
+        Team team = teamMapper.toEntity(teamCreateDTO);
         team.setOwnerId(userService.getCurrentUserId());
         teamRepository.save(team);
     }
@@ -39,27 +44,18 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
     public TeamResponseDTO updateTeam(TeamUpdateDTO teamUpdateDTO) {
         Team team = teamRepository.findById(teamUpdateDTO.teamId())
-                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
-
-        if (teamUpdateDTO.name() != null && !teamUpdateDTO.name().isBlank()) {
-            team.setName(teamUpdateDTO.name());
-        }
-
-        if (teamUpdateDTO.description() != null && !teamUpdateDTO.description().isBlank()) {
-            team.setDescription(teamUpdateDTO.description());
-        }
-
+                .orElseThrow(() -> new TeamNotFoundException("Team not found"));
+        teamMapper.updateEntityFromDto(teamUpdateDTO, team);
         team.setUpdatedAt();
-
-        Team updatedTeam = teamRepository.save(team);
-        return objectMapper.convertValue(updatedTeam, TeamResponseDTO.class);
+        teamRepository.save(team);
+        return teamMapper.toDto(team);
     }
 
-
-
     @Override
+    @TeamAccess(requiredRoles = {TeamRole.ROLE_TEAM_ADMIN})
     public void deleteTeam(@TeamId Long teamId) {
         teamRepository.deleteById(teamId);
     }

@@ -1,6 +1,6 @@
 package com.example.tasktracker.dto.teamDtos;
 
-import com.example.tasktracker.security.TeamId;
+import com.example.tasktracker.security.teamAccessUtils.TeamId;
 import jakarta.validation.constraints.Size;
 
 public record TeamUpdateDTO(

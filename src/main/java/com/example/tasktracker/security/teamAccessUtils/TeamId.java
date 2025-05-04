@@ -1,4 +1,4 @@
-package com.example.tasktracker.security;
+package com.example.tasktracker.security.teamAccessUtils;
 
 import java.lang.annotation.*;
 

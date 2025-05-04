@@ -9,8 +9,8 @@ import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundExcep
 import com.example.tasktracker.mapper.TeamMemberMapper;
 import com.example.tasktracker.model.TeamMember;
 import com.example.tasktracker.repository.TeamMemberRepository;
-import com.example.tasktracker.security.TeamAccess;
-import com.example.tasktracker.security.TeamId;
+import com.example.tasktracker.security.teamAccessUtils.TeamAccess;
+import com.example.tasktracker.security.teamAccessUtils.TeamId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;

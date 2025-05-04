@@ -1,5 +1,6 @@
-package com.example.tasktracker.security;
+package com.example.tasktracker.security.jwtUtils;
 
+import com.example.tasktracker.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
