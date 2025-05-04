@@ -21,5 +21,3 @@ public enum TeamRole {
         return this.level >= required.level;
     }
 }
-
-

@@ -5,10 +5,12 @@ import com.example.tasktracker.dto.taskDtos.TaskResponseDTO;
 import com.example.tasktracker.dto.taskDtos.TaskUpdateDTO;
 import com.example.tasktracker.enums.TeamRole;
 import com.example.tasktracker.exceptions.taskExceptions.TaskNotFoundException;
+import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundException;
 import com.example.tasktracker.mapper.TaskMapper;
 import com.example.tasktracker.model.Task;
 import com.example.tasktracker.repository.TaskRepository;
 import com.example.tasktracker.security.TeamAccess;
+import com.example.tasktracker.security.TeamId;
 import com.example.tasktracker.service.teamMembersService.TeamMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponseDTO findById(Long taskId) {
+    public TaskResponseDTO findById(@TeamId Long teamId, Long taskId) {
         return taskRepository.findTaskById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found"));
     }
@@ -39,13 +41,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     @TeamAccess(requiredRoles = {TeamRole.ROLE_MANAGER})
-    public TaskResponseDTO create(TaskCreateDTO dto) {
+    public TaskResponseDTO create(@TeamId Long teamId, TaskCreateDTO dto) {
 
         if (dto.userId() != null) {
-            boolean isMember = teamMemberService.isUserMemberOfTeam(dto.teamId(), dto.userId());
-            if (!isMember) {
-                throw new IllegalArgumentException("User is not a member of this team");
-            }
+            if (!teamMemberService.isUserMemberOfTeam(teamId, dto.userId()))
+                throw new TeamMemberNotFoundException("User is not a member of this team");
         }
 
         Task task = taskMapper.toEntity(dto);
@@ -53,14 +53,16 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.toDto(task);
     }
 
-
     @Override
-    public void delete(Long taskId) {
+    @TeamAccess(requiredRoles = {TeamRole.ROLE_MODERATOR})
+    public void delete(Long teamId, Long taskId) {
         taskRepository.deleteById(taskId);
     }
 
     @Transactional
-    public TaskResponseDTO update(TaskUpdateDTO taskUpdateDTO) {
+    @Override
+    @TeamAccess(requiredRoles = {TeamRole.ROLE_MEMBER})
+    public TaskResponseDTO update(@TeamId Long teamId, TaskUpdateDTO taskUpdateDTO) {
         Task task = taskRepository.findById(taskUpdateDTO.taskId())
                 .orElseThrow(() -> new TaskNotFoundException("Task not found"));
         taskMapper.updateEntityFromDto(taskUpdateDTO, task);

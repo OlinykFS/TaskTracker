@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface TaskService {
     List<TaskResponseDTO> findAllByTeamId(Long teamId);
-    TaskResponseDTO findById(Long taskId);
-    TaskResponseDTO create(TaskCreateDTO dto);
-    void delete(Long taskId);
-    TaskResponseDTO update(TaskUpdateDTO dto);
+    TaskResponseDTO findById(Long teamId, Long taskId);
+    TaskResponseDTO create(Long teamId, TaskCreateDTO dto);
+    void delete(Long teamId, Long taskId);
+    TaskResponseDTO update(Long teamId, TaskUpdateDTO dto);
 }

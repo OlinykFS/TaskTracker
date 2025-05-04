@@ -7,9 +7,10 @@ import com.example.tasktracker.dto.authDtos.RegistrationResponseDTO;
 import com.example.tasktracker.enums.UserRole;
 import com.example.tasktracker.exceptions.EmailAlreadyExistsException;
 import com.example.tasktracker.model.User;
-import com.example.tasktracker.security.JwtTokenProvider;
 import com.example.tasktracker.repository.UserRepository;
+import com.example.tasktracker.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,27 +32,24 @@ public class AuthServiceImpl implements AuthService {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        String token = tokenProvider.generateToken(authentication);
-        return new LoginResponseDTO("Success", token);
+        return new LoginResponseDTO("Success", tokenProvider.generateToken(authentication));
     }
 
     @Override
     @Transactional
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO registrationRequest) {
-        String encodedPassword = passwordEncoder.encode(registrationRequest.password());
-        User user = new User(
-                null,
-                registrationRequest.email(),
-                encodedPassword,
-                registrationRequest.firstName(),
-                registrationRequest.lastName(),
-                UserRole.ROLE_USER
-        );
         try {
-            userRepository.save(user);
+            userRepository.save(new User(
+                    null,
+                    registrationRequest.email(),
+                    passwordEncoder.encode(registrationRequest.password()),
+                    registrationRequest.firstName(),
+                    registrationRequest.lastName(),
+                    UserRole.ROLE_USER
+            ));
                 return new RegistrationResponseDTO("User registered successfully");
-        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-            throw new EmailAlreadyExistsException("Email already exists", ex);
+        } catch (DataIntegrityViolationException ex) {
+            throw new EmailAlreadyExistsException("Email already exists");
         }
     }
 }
