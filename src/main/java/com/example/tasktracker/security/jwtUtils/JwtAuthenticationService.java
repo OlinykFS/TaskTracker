@@ -25,15 +25,11 @@ public class JwtAuthenticationService {
 
     public Authentication getAuthentication(String token) {
         String email = jwtTokenProvider.getEmailFromToken(token);
-        log.info("Extracted email from token: {}", email);
 
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        log.info("Loaded user: {}", user.getEmail());
-
         List<TeamMember> teamRoles = teamMemberRepository.findAllByUserId(user.getId());
-        log.info("Loaded team roles: {}", teamRoles);
 
         CustomUserDetails userDetails = new CustomUserDetails(user, teamRoles);
 

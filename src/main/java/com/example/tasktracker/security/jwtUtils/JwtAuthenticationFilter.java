@@ -22,10 +22,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtAuthenticationService authenticationService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String token = extractToken(request);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String token = tokenProvider.extractJwtFromRequest(request);
 
         if (token != null && tokenProvider.validateToken(token)) {
             Authentication authentication = authenticationService.getAuthentication(token);
@@ -35,10 +33,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String extractToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        return (bearerToken != null && bearerToken.startsWith("Bearer "))
-                ? bearerToken.substring(7)
-                : null;
-    }
+
 }
