@@ -58,6 +58,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @TeamAccess(requiredRoles = {TeamRole.ROLE_MODERATOR})
     public void delete(Long teamId, Long taskId) {
+        boolean exist = taskRepository.existsById(taskId);
+        if (!exist)
+            throw new TaskNotFoundException("Task not found");
         taskRepository.deleteById(taskId);
     }
 

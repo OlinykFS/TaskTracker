@@ -1,6 +1,7 @@
 package com.example.tasktracker.exceptions;
 
 import com.example.tasktracker.dto.ErrorResponse;
+import com.example.tasktracker.exceptions.taskExceptions.TaskNotFoundException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamEmptyException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamMemberAlreadyExistException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundException;
@@ -30,6 +31,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTeamMemberNotFoundException(TeamMemberNotFoundException ex) {
         ErrorResponse error = new ErrorResponse(ex.getMessage(),"TEAM_MEMBER_NOT_FOUND", HttpStatus.NOT_FOUND.value());
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTaskNotFoundException(TaskNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), "Task not found", HttpStatus.NOT_FOUND.value());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(TeamEmptyException.class)

@@ -7,7 +7,9 @@ public record TaskResponseDTO(
         String priority,
         String email,
         Long id,
+
         String createdAt,
+
         String updatedAt
 ) {}
 

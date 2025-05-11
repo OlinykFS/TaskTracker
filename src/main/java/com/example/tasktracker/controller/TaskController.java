@@ -6,6 +6,8 @@ import com.example.tasktracker.dto.taskDtos.TaskUpdateDTO;
 import com.example.tasktracker.service.taskService.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,13 +30,15 @@ public class TaskController {
     }
 
     @PostMapping
-    public TaskResponseDTO createTask(@PathVariable Long teamId, @Valid @RequestBody TaskCreateDTO dto) {
-        return taskService.create(teamId, dto);
+    public ResponseEntity<TaskResponseDTO> createTask(@PathVariable Long teamId, @Valid @RequestBody TaskCreateDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.create(teamId, dto));
     }
 
+
     @DeleteMapping("/{taskId}")
-    public void deleteTaskById(@PathVariable Long teamId, @PathVariable Long taskId) {
+    public ResponseEntity<Void> deleteTaskById(@PathVariable Long teamId, @PathVariable Long taskId) {
         taskService.delete(teamId, taskId);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping
