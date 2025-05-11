@@ -5,6 +5,7 @@ import com.example.tasktracker.exceptions.taskExceptions.TaskNotFoundException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamEmptyException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamMemberAlreadyExistException;
 import com.example.tasktracker.exceptions.teamExceptions.TeamMemberNotFoundException;
+import com.example.tasktracker.exceptions.teamExceptions.TeamNotFoundException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTeamIsEmptyException(TeamEmptyException ex) {
         ErrorResponse error = new ErrorResponse(ex.getMessage(),"Team is Empty", HttpStatus.NO_CONTENT.value());
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(TeamNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTeamNotFoundException(TeamNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(),"Team not found", HttpStatus.NOT_FOUND.value());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(TeamMemberAlreadyExistException.class)

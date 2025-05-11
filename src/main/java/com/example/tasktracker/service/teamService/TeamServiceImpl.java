@@ -27,15 +27,18 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public void createTeam(TeamCreateDTO teamCreateDTO) {
+    public TeamResponseDTO createTeam(TeamCreateDTO teamCreateDTO) {
         Team team = teamMapper.toEntity(teamCreateDTO);
         team.setOwnerId(userService.getCurrentUserId());
         teamRepository.save(team);
+        return teamMapper.toDto(team);
     }
 
     @Override
     public List<TeamResponseDTO> findAllTeams() {
-        return teamRepository.getAllTeams();
+        return teamRepository.getAllTeams()
+                .orElseThrow(() -> new TeamNotFoundException("Teams not Found"));
+
     }
 
     @Override

@@ -7,13 +7,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TeamRepository extends CrudRepository<Team, Long> {
     @Query("""
-SELECT t.name AS name, t.description AS description FROM teams t
+SELECT t.id, t.name, t.description  FROM teams t
 """)
-    List<TeamResponseDTO> getAllTeams();
+    Optional<List<TeamResponseDTO>> getAllTeams();
 
     TeamResponseDTO getTeamById(Long id);
 

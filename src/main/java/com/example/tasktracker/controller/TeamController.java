@@ -6,6 +6,8 @@ import com.example.tasktracker.dto.teamDtos.TeamUpdateDTO;
 import com.example.tasktracker.service.teamService.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,8 +20,8 @@ public class TeamController {
     private final TeamService teamService;
 
     @PostMapping
-    public void createTeam(@RequestBody @Valid TeamCreateDTO teamCreateDTO) {
-        teamService.createTeam(teamCreateDTO);
+    public ResponseEntity<TeamResponseDTO> createTeam(@RequestBody @Valid TeamCreateDTO teamCreateDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(teamService.createTeam(teamCreateDTO));
     }
 
     @GetMapping
@@ -33,13 +35,14 @@ public class TeamController {
     }
 
     @PutMapping()
-    public TeamResponseDTO updateTeam(@RequestBody @Valid TeamUpdateDTO dto) {
-        return teamService.updateTeam(dto);
+    public ResponseEntity<TeamResponseDTO> updateTeam(@RequestBody @Valid TeamUpdateDTO dto) {
+        return ResponseEntity.ok(teamService.updateTeam(dto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTeam(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
         teamService.deleteTeam(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
 

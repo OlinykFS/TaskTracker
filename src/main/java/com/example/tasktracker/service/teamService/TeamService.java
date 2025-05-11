@@ -7,7 +7,7 @@ import com.example.tasktracker.dto.teamDtos.TeamUpdateDTO;
 import java.util.List;
 
 public interface TeamService {
-    void createTeam(TeamCreateDTO teamCreateDTO);
+    TeamResponseDTO createTeam(TeamCreateDTO teamCreateDTO);
     List<TeamResponseDTO> findAllTeams();
     TeamResponseDTO findTeamById(Long teamId);
     TeamResponseDTO updateTeam(TeamUpdateDTO teamCreateDTO);
