@@ -21,9 +21,4 @@ public class Team {
     private Long ownerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-
-    public void setUpdatedAt() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

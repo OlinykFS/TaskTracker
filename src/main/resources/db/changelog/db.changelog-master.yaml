@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/4-create-unique-index-on-TeamMembers-Table.sql
   - include:
       file: db/changelog/5-add-remove-constrain-userId-NotNull.sql
+  - include:
+      file: db/changelog/6-add-update-create-status-for-task.sql

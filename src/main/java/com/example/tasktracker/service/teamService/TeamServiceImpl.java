@@ -49,8 +49,7 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findById(teamUpdateDTO.teamId())
                 .orElseThrow(() -> new TeamNotFoundException("Team not found"));
         teamMapper.updateEntityFromDto(teamUpdateDTO, team);
-        team.setUpdatedAt();
-        teamRepository.save(team);
+        teamRepository.updateTeamById(team.getId(), team.getName(), team.getDescription());
         return teamMapper.toDto(team);
     }
 

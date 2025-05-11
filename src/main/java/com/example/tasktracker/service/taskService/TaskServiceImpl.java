@@ -13,6 +13,7 @@ import com.example.tasktracker.security.teamAccessUtils.TeamAccess;
 import com.example.tasktracker.security.teamAccessUtils.TeamId;
 import com.example.tasktracker.service.teamMembersService.TeamMemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final TeamMemberService teamMemberService;
+    private final JdbcAggregateTemplate jdbcAggregateTemplate;
 
     @Override
     public List<TaskResponseDTO> findAllByTeamId(Long teamId) {
@@ -59,14 +61,15 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(taskId);
     }
 
-    @Transactional
     @Override
+    @Transactional
     @TeamAccess(requiredRoles = {TeamRole.ROLE_MEMBER})
-    public TaskResponseDTO update(@TeamId Long teamId, TaskUpdateDTO taskUpdateDTO) {
-        Task task = taskRepository.findById(taskUpdateDTO.taskId())
+    public TaskResponseDTO update(@TeamId Long teamId, TaskUpdateDTO dto) {
+        Task task = taskRepository.findById(dto.taskId())
                 .orElseThrow(() -> new TaskNotFoundException("Task not found"));
-        taskMapper.updateEntityFromDto(taskUpdateDTO, task);
-        taskRepository.save(task);
+        taskMapper.updateEntityFromDto(dto, task);
+        jdbcAggregateTemplate.update(task);
+
         return taskMapper.toDto(task);
     }
 }

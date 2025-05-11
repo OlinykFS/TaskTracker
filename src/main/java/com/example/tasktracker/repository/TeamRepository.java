@@ -16,4 +16,13 @@ SELECT t.name AS name, t.description AS description FROM teams t
     List<TeamResponseDTO> getAllTeams();
 
     TeamResponseDTO getTeamById(Long id);
+
+    @Query("""
+    UPDATE teams
+    SET name = :name,
+        description = :description
+    WHERE id = :teamId
+""")
+    void updateTeamById(Long teamId, String name, String description);
+
 }
